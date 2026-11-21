@@ -1,3 +1,6 @@
+import java.util.ArrayList;
+import java.util.List;
+
 public class TabelaHash implements EstruturaIndexada {
     private final int capacidade;
     private int colisoes;
@@ -7,6 +10,7 @@ public class TabelaHash implements EstruturaIndexada {
     private final ListaEncadeada[] tabela;
 
     public TabelaHash(int capacidade){
+        if (capacidade <= 0) throw new IllegalArgumentException("capacidade deve ser positiva");
         this.capacidade = capacidade;
         this.colisoes = 0;
         tabela = new ListaEncadeada[capacidade];
@@ -82,35 +86,17 @@ public class TabelaHash implements EstruturaIndexada {
     @Override
     public Registro[] consultarIntervalo(int min, int max) {
         inspecoesUltimaConsulta = 0;
-        int encontrados = 0;
-
-        for(ListaEncadeada lista : tabela){
+        List<Registro> resultado = new ArrayList<>();
+        for (ListaEncadeada lista : tabela) {
             No atual = lista.getInicio();
-            while(atual != null){
+            while (atual != null) {
                 inspecoesUltimaConsulta++;
                 int id = atual.getRegistro().getId();
-                if(id >= min && id <= max){
-                    encontrados++;
-                }
+                if (id >= min && id <= max) resultado.add(atual.getRegistro());
                 atual = atual.getProximoNo();
             }
         }
-
-        Registro[] resultado = new Registro[encontrados];
-        int i = 0;
-        for(ListaEncadeada lista : tabela){
-            No atual = lista.getInicio();
-            while (atual != null){
-                int id = atual.getRegistro().getId();
-                if(id >= min && id <= max){
-                    resultado[i] = atual.getRegistro();
-                    i++;
-                }
-                atual = atual.getProximoNo();
-            }
-        }
-
-        return resultado;
+        return resultado.toArray(new Registro[0]);
     }
 
     @Override
@@ -236,7 +222,3 @@ public class TabelaHash implements EstruturaIndexada {
         }
     }
 }
-
-
-
-
